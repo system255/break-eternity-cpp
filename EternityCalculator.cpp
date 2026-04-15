@@ -22,21 +22,6 @@ struct ENum {
     double v;
 };
 
-//OTHER CONCEPTS
-//BracketNum: A concept designed to compute numbers up to 10{1.79e308}10
-//Same as the BigNum calc, it uses 16 bytes for one.
-//The BracketNum, instead of using like OmegaNum (1000-slot arrays), which takes 8000 bytes (MAX) per value
-//it uses the same concept for storing like OmegaNum but with 5 slots as the difference between I2H200G133F123 and I2H200G133Fe123 doesn't matter at this point
-//because it's so small incremental games would definetly increase this. If there's like I1e10 i change this
-
-//struct ONum {
-//  int op;
-//  double v;
-//  double l[] = {0, 0, 0, 0, 0};
-//  double la[] = {0, 0, 0, 0, 0}; //amount for each layer
-
-//}
-
 //Use for some other stuff, NOT recommended to delete.
 ENum e = {0, 2.71828182846};
 ENum pi = {0, 3.14159265359};
@@ -308,8 +293,9 @@ ENum slogNum(ENum a){ //NOT ACCURATE, TESTED ON {2, 3} AND RETURNED 2.84 INSTEAD
     return {0, a.l + log10(a.v) + b};
 }
 
+
+//MORE STUFF COMING SOON LIKE HERE
 //space for exponential factorial (expfact) here
-//space for super logarithm (slog) here
 //space for user input to value (example: ee27 = {2, 27}) here
 
 //INPUTS: 
@@ -323,7 +309,7 @@ int main() {
     while(1){
         int inputIDK;
         double dbl;
-        cout << "1-add, 2-mul, 3-pow, 4-tetrate, 5-sub, 6-div, 7-log10, 8-pow10, 9-fact, 10-ln, 11-logbase, 12-isequal" << endl;
+        cout << "1-add, 2-mul, 3-pow, 4-tetrate, 5-sub, 6-div, 7-log10, 8-pow10, 9-fact, 10-ln, 11-logbase, 12-isequal, 13-ishigher, 14-islower, 15-slog" << endl;
         cin >> inputIDK;
         cout << "Number A Value: ";
         cin >> num.v;
@@ -350,6 +336,9 @@ int main() {
             case 10: num = lnNum(num); break;
             case 11: num = logBaseNum(num, testnum); break;
             case 12: isEqual(num, testnum); break;
+            case 13: isHigher(num, testnum); break;
+            case 14: isLower(num, testnum); break;
+            case 15: slogNum(num, testnum); break;
             default: cout<<"invalid"<<endl;
         }
         cout<<returnNum(num)<<endl;
