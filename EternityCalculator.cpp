@@ -254,7 +254,7 @@ ENum factNum(const ENum& a){
     } else {
         result.v += add;
     }
-    return result; //return fixNum(result);
+    return fixNum(result);
 }
 
 ENum lnNum(const ENum& a){
