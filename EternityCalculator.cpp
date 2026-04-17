@@ -1,6 +1,9 @@
 //Eternity Calculator (Specified limit: F2147483647)
-//v0.16
-//expfact
+//v0.17
+//5 new tools (biggest update?)
+
+//How is this shorter than Calc Unlimited, which has ~510 lines but this has 400.
+//Okay i created this comment because it was actually 399 lines. (17/04/2026)
 
 //Eternity Calculator may be discontinued soon, as there's another thing in progress.
 //BracketNum, that instead of having the limit of only F1.79e308, it goes to 10{1.79e308}10, surpassing OmegaNum but still is below ExpantaNum
@@ -8,7 +11,7 @@
 //V0?: ETERNITYNUM SETUP | V0.1: ADDITION | V0.2: MULTIPLICATION | V0.3: POWER
 //V0.4: TETRATION (V1) | V0.5: TETRATION (V2) | V0.6: FIXNUM + BUGFIXES | V0.7: LOG10, POW10, O(1) TETRATION
 //V0.8: SUBTRACTION | V0.9: DIVISION | V0.10: NATURAL LOGARITHM | V0.11: LOGARITHM
-//V0.12: ISEQUAL | V0.13: ISHIGHER | V0.14: ISLOWER | V0.15: SLOG (V1) | V0.16: EXPFACT
+//V0.12: ISEQUAL | V0.13: ISHIGHER | V0.14: ISLOWER | V0.15: SLOG (V1) | V0.16: EXPFACT | V0.17: LADD, LMUL, LPOW, EPOW AND SQRT
 
 //Upcoming: factorials
 
@@ -336,7 +339,12 @@ ENum expfactNum(ENum a, double n){
     }
     return result;
 }
-//space for super logarithm (slog) here
+
+ENum layerAddition(ENum a, double n) {return {floor(a.l += n), a.v};}
+ENum layerMulti(ENum a, double n) {return {floor(a.l *= n), a.v};}
+ENum layerExpo(ENum a, double n) {return {floor(pow(a.l, n)), a.v};}
+ENum ePow(ENum a) {return powNum(e, a);}
+ENum sqrtNum(ENum a) {return powNum(a, {0, 0.5});}
 
 //INPUTS: 
 //V = {0, V}
@@ -349,7 +357,7 @@ int main() {
     while(1){
         int inputIDK;
         double dbl;
-        cout << "1-add, 2-mul, 3-pow, 4-tetrate, 5-sub, 6-div, 7-log10, 8-pow10, 9-fact, 10-ln, 11-logbase, 12-isequal, 13-ishigher, 14-islower, 15-slog, 16-expfact" << endl;
+        cout << "1-add, 2-mul, 3-pow, 4-tetrate, 5-sub, 6-div, 7-log10, 8-pow10, 9-fact, 10-ln, 11-logbase, 12-isequal, 13-ishigher, 14-islower, 15-slog, 16-expfact, 17-addlayer, 18-mullayer, 19-powlayer, 20-epow, 21-sqrt"<< endl;
         cin >> inputIDK;
         cout << "Number A Value: ";
         cin >> num.v;
@@ -380,6 +388,11 @@ int main() {
             case 14: isLower(num, testnum); break;
             case 15: num = slogNum(num); break;
             case 16: num = expfactNum(num, dbl); break;
+            case 17: num = layerAddition(num, dbl); break;
+            case 18: num = layerMulti(num, dbl); break;
+            case 19: num = layerExpo(num, dbl); break;
+            case 20: num = ePow(num); break;
+            case 21: num = sqrtNum(num); break;
             default: cout<<"invalid"<<endl;
         }
         cout<<returnNum(num)<<endl;
