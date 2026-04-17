@@ -1,11 +1,14 @@
 //Eternity Calculator (Specified limit: F2147483647)
-//v0.15
-//slog
+//v0.16
+//expfact
+
+//Eternity Calculator may be discontinued soon, as there's another thing in progress.
+//BracketNum, that instead of having the limit of only F1.79e308, it goes to 10{1.79e308}10, surpassing OmegaNum but still is below ExpantaNum
 
 //V0?: ETERNITYNUM SETUP | V0.1: ADDITION | V0.2: MULTIPLICATION | V0.3: POWER
 //V0.4: TETRATION (V1) | V0.5: TETRATION (V2) | V0.6: FIXNUM + BUGFIXES | V0.7: LOG10, POW10, O(1) TETRATION
 //V0.8: SUBTRACTION | V0.9: DIVISION | V0.10: NATURAL LOGARITHM | V0.11: LOGARITHM
-//V0.12: ISEQUAL | V0.13: ISHIGHER | V0.14: ISLOWER | V0.15: SLOG (V1)
+//V0.12: ISEQUAL | V0.13: ISHIGHER | V0.14: ISLOWER | V0.15: SLOG (V1) | V0.16: EXPFACT
 
 //Upcoming: factorials
 
@@ -22,6 +25,8 @@ struct ENum {
     double v;
 };
 
+//OTHER CONCEPTS
+
 //Use for some other stuff, NOT recommended to delete.
 ENum e = {0, 2.71828182846};
 ENum pi = {0, 3.14159265359};
@@ -37,11 +42,17 @@ ENum pi = {0, 3.14159265359};
 
 //RETURN NUMBER
 string returnNum(ENum definedNumber) {
+    if(!isinf(definedNumber.l)){
     ostringstream oss;
       oss << fixed << setprecision(10) << "\033[33m~" << definedNumber.v
       << "F"
       << setprecision(0) << definedNumber.l << "\033[0m";
       return oss.str();
+    }else{
+     ostringstream oss;
+        oss << fixed << setprecision(10) << "\033[33m" << "Omega (Too small? Try 'BracketNum'!)" << "\033[0m";
+      return oss.str();
+    }
     //old: return "{" + to_string(definedNumber.l) + ", " + to_string(definedNumber.v) + "}";
 }
 
@@ -185,9 +196,17 @@ ENum powNum(const ENum& a, const ENum& b){
     logR = mulNum({0, a.v}, {1, b.v});
     if(a.l == 1 && b.l == 1) return {logR.l + 1, logR.v};
     //LAYER 2+ CASES
-    if(a.l >= 1 && b.l >= 1){
-        return {max(a.l, b.l) + 1, max(a.v, b.v)};
-    }   
+    if(a.v > 0){
+        ENum logA = {a.l, a.v};
+        if(a.l == 0){
+            logA = {0, log10(a.v)};
+        } else {
+            logA = {a.l - 1, a.v};
+        }
+        logR = mulNum(b, logA);
+        logR.v += log10(b.v + 1);
+        return {logR.l + 1, logR.v};
+    }
     //DIFFERENT LAYERS
     if(a.l > b.l) return a;
     if(b.l > a.l) return b;
@@ -195,7 +214,7 @@ ENum powNum(const ENum& a, const ENum& b){
     return (a.v > b.v) ? a : b;
 }
 
-//TETRATION (O(1))
+//TETRATION
 ENum tetrateNum(const ENum& a, double b){
     if(b <= 1) return a;
     ENum result = a;
@@ -254,7 +273,7 @@ ENum factNum(const ENum& a){
     } else {
         result.v += add;
     }
-    return fixNum(result);
+    return result; //return fixNum(result);
 }
 
 ENum lnNum(const ENum& a){
@@ -293,10 +312,31 @@ ENum slogNum(ENum a){ //NOT ACCURATE, TESTED ON {2, 3} AND RETURNED 2.84 INSTEAD
     return {0, a.l + log10(a.v) + b};
 }
 
+double toDouble(ENum a){
+    double returned;
+    returned = a.v;
+    for(int i = 0; i<a.l; i++){
+        returned = pow(10, returned);
+    }
+    if(isinf(returned)) cout << "toDouble overflow (>2^1024). Returned 1" << endl; return 1;
+    return returned;
+}
 
-//MORE STUFF COMING SOON LIKE HERE
-//space for exponential factorial (expfact) here
-//space for user input to value (example: ee27 = {2, 27}) here
+ENum expfactNum(ENum a, double n){
+    ENum result = {0, 1};
+    if(n >= 100){
+        result.l = a.v-4;
+        result.v = 183230.6838806810 * pow(n, log10(a.v));
+        if(isinf(result.v)) result.l++; result.v=308.25;
+        fixNum(result);
+    }else{
+        for(int i = 2; i <= n; i++){
+            result = powNum({0, (double)i}, result);
+        }
+    }
+    return result;
+}
+//space for super logarithm (slog) here
 
 //INPUTS: 
 //V = {0, V}
@@ -309,7 +349,7 @@ int main() {
     while(1){
         int inputIDK;
         double dbl;
-        cout << "1-add, 2-mul, 3-pow, 4-tetrate, 5-sub, 6-div, 7-log10, 8-pow10, 9-fact, 10-ln, 11-logbase, 12-isequal, 13-ishigher, 14-islower, 15-slog" << endl;
+        cout << "1-add, 2-mul, 3-pow, 4-tetrate, 5-sub, 6-div, 7-log10, 8-pow10, 9-fact, 10-ln, 11-logbase, 12-isequal, 13-ishigher, 14-islower, 15-slog, 16-expfact" << endl;
         cin >> inputIDK;
         cout << "Number A Value: ";
         cin >> num.v;
@@ -338,7 +378,8 @@ int main() {
             case 12: isEqual(num, testnum); break;
             case 13: isHigher(num, testnum); break;
             case 14: isLower(num, testnum); break;
-            case 15: slogNum(num, testnum); break;
+            case 15: num = slogNum(num); break;
+            case 16: num = expfactNum(num, dbl); break;
             default: cout<<"invalid"<<endl;
         }
         cout<<returnNum(num)<<endl;
