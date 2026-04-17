@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Eternity Calculator</title>
+</head>
+<body>
+
+<h2>Eternity Calculator</h2>
+<p>Warning! Some things might not work or return Infinity (omega), but it's not broken when you run it NOT in the website.</p>
+
+Value A: <input id="valueA"><br>
+Layer A: <input id="layerA"><br><br>
+
+Value B: <input id="valueB"><br>
+Layer B: <input id="layerB"><br><br>
+
+Double: <input id="dbl"><br><br>
+<select id="operation">
+  <option value="1">Add</option>
+  <option value="2">Multiply</option>
+  <option value="3">Subtract</option>
+  <option value="4">Divide</option>
+  <option value="5">Power</option>
+  <option value="6">Tetrate</option>
+  <option value="7">Log10</option>
+  <option value="8">Pow10</option>
+  <option value="9">Factorial</option>
+  <option value="10">Natural Logarithm</option>
+  <option value="11">Logarithm</option>
+  <option value="12">Is Equal</option>
+  <option value="13">Is Higher</option>
+  <option value="14">Is Lower</option>
+  <option value="15">Super Logarithm</option>
+  <option value="16">Exponential Factorial</option>
+  <option value="17">Layer Addition</option>
+  <option value="18">Layer Multiplication</option>
+  <option value="19">Layer Exponentation</option>
+  <option value="20">E-Pow</option>
+  <option value="21">Square Root</option>
+</select>
+
+<br>
+<button onclick="run()">Calculate</button>
+
+<h4>General Information</h4>
+<p>Welcome to EternityCalc! This is a showcase of a project made to compute numbers up to 10^^2^1024.</p>
+<p>Stuff like isEqual, isHigher or isLower will return true/false, which makes it return actually Omega.</p>
+<p>Instead of the old calculator i have done to calculate up to ee308 (10^10^308), this one goes to F1.79e308.</p>
+<p>How did i make this? It's simple: If mantissa reaches 1e10, increase layer by one. Same with the ee308 one, but it was '10' there.</p>
+<p>Will there be another one with an even bigger limit? Yes! It will be called BracketNum, which will go to 10{1.79e308}10.</p>
+<p>(Just so you knowo BracketNum doesn't even have addition, lol)</p>
+
+<h3 id="output"></h3>
+
+<script>
+    //Eternity Calculator: JS-Translated: Version v0.17
+    //This is the C++ EternityCalculator code but translated to JS.
+    //(I don't know ANY of the JS features lol, i only know that let and ===)
+
+    //Newer versions will not be converted into JS.
+
+    //This will be used for a website to actually showcase it on a website instead of installing and all that.
+    //300 PROBLEMS?! WHATTTTTTTT (update: only 104 now)
+
+    //Upcoming: factorials
+
+    // STRUCT replacement
+    class ENum {
+        constructor(l, v) {
+            this.l = l;
+            this.v = v;
+        }
+    }
+
+    // CONSTANTS
+    const e = new ENum(0, 2.71828182846);
+    const pi = new ENum(0, 3.14159265359);
+
+    // RETURN NUMBER (string)
+    function returnNum(n) {
+        if (!isFinite(n.l)) {
+            return "Omega (Currently working on BracketNum, a extension of this)";
+        }
+        return `~${n.v.toFixed(10)}F${Math.floor(n.l)}`;
+    }
+
+    // FIX NUMBER
+    function fixNum(n) {
+        while (n.v >= 1e10) {
+            n.v = Math.log10(n.v);
+            n.l++;
+        }
+        while (n.v < 1 && n.l > 0) {
+            n.v = Math.pow(10, n.v);
+            n.l--;
+        }
+        return n;
+    }
+
+    // ADDITION
+    function addNum(a, b) {
+        // layer 0 + 1 cases
+        if (a.l === 0 && b.l === 1) {
+            let av = Math.log10(a.v);
+            return addNum(new ENum(1, av), b);
+        }
+        if (a.l === 1 && b.l === 0) {
+            let bv = Math.log10(b.v);
+            return addNum(a, new ENum(1, bv));
+        }
+
+        // different layers
+        if (a.l > b.l) return a;
+        if (b.l > a.l) return b;
+
+        // layer 0
+        if (a.l === 0) {
+            let result = new ENum(a.l, a.v + b.v);
+            return fixNum(result);
+        }
+
+        // higher layers
+        let dif = Math.abs(a.v - b.v);
+        if (dif > 10.0) {
+            return (a.v > b.v) ? a : b;
+        }
+
+        // layer 1
+        if (a.l === 1) {
+            let maxv = Math.max(a.v, b.v);
+            let minv = Math.min(a.v, b.v);
+            let result = maxv + Math.log10(1 + Math.pow(10, minv - maxv));
+            return new ENum(1, result);
+        }
+
+        // layer ≥ 2
+        return (a.v > b.v) ? a : b;
+    }
+
+    function subNum(a, b){
+        // if equal
+        if(a.l == b.l && a.v == b.v) return {l:0, v:0};
+        if(a.l < b.l) return {l:0, v:0};
+        if(a.l == b.l && a.v < b.v) return {l:0, v:0};
+        // layer 0
+        if(a.l == 0 && b.l == 0){
+            let result = new ENum (0, a.v - b.v);
+            return fixNum(result);
+        }
+        // layer 1 
+        if(a.l == 1 && b.l == 1){
+            let dif = a.v - b.v;
+            if(dif > 10) return a;
+            let result = a.v + Math.log10(1.0 - Math.pow(10.0, b.v - a.v));
+            return new ENum (1, result);
+        }
+        // different layers
+        if(a.l > b.l) return a;
+        return a;
+    }
+
+    //MULTIPLY
+    function mulNum(a, b){
+        //IF BOTH ARE 0 (prevent log10(0))
+        if(a.l == 0 && a.v == 0) return new ENum(0, 0);
+        if(b.l == 0 && b.v == 0) return new ENum(0, 0);
+        //LAYER 0+0
+        if(a.l==0 && b.l==0){ let result = new ENum (a.l, a.v * b.v);
+        return fixNum(result); }
+        //LAYER 0+1
+        if(a.l==0 && b.l==1){
+            let av = Math.log10(a.v);
+            return mulNum({l:1, v:av}, b);
+        }
+        //LAYER 1+0
+        if (a.l == 1 && b.l == 0) {
+            let bv = Math.log10(b.v);
+            return mulNum(a, {l:1, v:bv});
+        }
+        //LAYER 1+1
+        if(a.l==1 && b.l==1){ return {l:a.l, v:a.v + b.v}; } //1, 5 * 1, 5 would return 1, 5+5 (1, 10)
+        //DIFFERENT LAYERS (example: 2+1, 3+28)
+        if(a.l > b.l) return a;
+        if(b.l > a.l) return b;
+        //LAYER 2+ and 2+
+        if(a.v > b.v) return a;
+        if(b.v > a.v) return b;
+        return a;
+    }
+
+    function divNum(a, b){
+        if(b.l == 0 && b.v == 0) throw new Error("Division by zero");
+        if(a.l == 0 && b.l == 0){
+            let result = new ENum (0, a.v / b.v);
+            return fixNum(result);
+        }
+        if(a.l == 0 && b.l == 1) return new ENum(0, 0);
+        if(a.l == 1 && b.l == 0){
+            let bv = Math.log10(b.v);
+            return new ENum (1, a.v - bv);
+        }
+        if(a.l == 1 && b.l == 1) return new ENum (1, a.v - b.v);
+        if(a.l > b.l) return a;
+        if(b.l > a.l) return new ENum (0, 0);
+        let c = new ENum (0, 0);
+        return (a.v > b.v) ? a : c;
+    }
+
+    function powNum(a, b){
+        let exponentPart = new ENum(0, b.v);
+        let logPart = new ENum (0, Math.log10(a.v));
+        let logR; //changed from double to ENum for higher powers
+        //LAYER 0+0
+        if(a.l == 0 && b.l == 0){
+            logR = mulNum({l:0, v:b.v}, {l:0, v:Math.log10(a.v)});
+            if(logR.l == 0 && logR.v <= 308){
+                let result = new ENum(0, Math.pow(a.v, b.v));
+                return fixNum(result);
+            }else{
+                let result = new ENum (logR.l + 1, logR.v);
+                return fixNum(result);
+            }
+        }
+        //LAYER 1+0
+        if(a.l == 1 && b.l == 0) return new ENum (1, a.v * b.v);
+        //LAYER 0+1
+        logR = mulNum({l:1, v:b.v}, {l:0, v:log10(a.v)});
+        if(a.l == 0 && b.l == 1) return new ENum (logR.l + 1, logR.v);
+        //LAYER 1+1
+        logR = mulNum({l:0, v:a.v}, {l:1, v:b.v});
+        if(a.l == 1 && b.l == 1) return new ENum (logR.l + 1, logR.v);
+        //LAYER 2+ CASES
+        if(a.v > 0){
+            let logA = new ENum (a.l, a.v);
+            if(a.l == 0){
+                logA = {l:0, v:Math.log10(a.v)};
+            } else {
+                logA = {l:a.l - 1, v:a.v};
+            }
+            logR = mulNum(b, logA);
+            logR.v += Math.log10(b.v + 1);
+            return new ENum (logR.l + 1, logR.v);
+        }
+        //DIFFERENT LAYERS
+        if(a.l > b.l) return a;
+        if(b.l > a.l) return b;
+        //SAME LAYERS ABOVE 2
+        return (a.v > b.v) ? a : b;
+    }
+
+    //TETRATION
+    function tetrateNum(a,b){
+        if(b <= 1) return a;
+        let result = new ENum(a);
+        //SMALL VALUES
+        if(b < 10 && a.l == 0){
+            for(i = 1; i < b; i++){
+                result = powNum(a, result);
+                result = fixNum(result);
+            }
+            return result;
+        }
+        //BIG VALUES
+        result.l += (b - 1);
+        result.v += Math.log10(b);
+        return result;
+    }
+
+    function log10Num(n) {
+        if (n.l == 0) return new ENum(0, log10(n.v));
+        return new ENum(n.l - 1, n.v);
+    }
+
+    function pow10Num(n){
+        return new ENum(n.l+1, n.v);
+    }
+
+    function factNum(a){
+        // negative check
+        if(a.v < 0) return new ENum (0, 0);
+        // 0! and 1!
+        if(a.l == 0 && a.v <= 1) return new ENum (0, 1);
+        if(a.l == 0){
+            let n = Math.floor(a.v);
+
+            if(n < 20){
+                let result = 1;
+                for(i = 2; i <= n; i++){
+                    result *= i;
+                }
+                return new ENum (0, result);
+            }
+
+            // Stirling (log10 form)
+            let logResult =
+                n * Math.log10(n / Math.exp(1.0))
+                + 0.5 * Math.log10(2.0 * 3.14159265358979323846 * n);
+
+            let problemBypass = new ENum(1, logResult);
+            return fixNum(problemBypass);
+        }
+        let result = a;
+        let add = Math.log10(result.v);
+
+        if(result.l == 1){
+            result.l = 2;
+            result.v += add - Math.log10(Math.exp(1.0)); // subtract log10(e)
+        } else {
+            result.v += add;
+        }
+        return result; //return fixNum(result);
+    }
+
+    function lnNum(a){
+        //IF A IS 0
+        if(a.l == 0) return new ENum(0, Math.log(a.v));
+        //IF A IS 1
+        if(a.l == 1) return new ENum (0, a.v * Math.log(10));
+        //IF A IS 2 OR ABOVE
+        return new ENum (a.l - 1, a.v + Math.log10(Math.log(10)));
+    }
+
+    function logBaseNum(a, b){
+        return divNum(lnNum(a), lnNum(b)); //a = 100 and b = 10 = div(4.60517018599 / ~2.30) = 2
+    }
+
+    function isEqual(a,b){
+        if(a.l != b.l) return false;
+        if(a.v != b.v) return false;
+        return true;
+    }
+
+    function isHigher(a,b){
+        if(a.l > b.l) return true;
+        if(a.v > b.v && a.l == b.l) return true;
+        return false;
+    }
+
+    function isLower(a,b){
+        if(a.l < b.l) return true;
+        if(a.v < b.v && a.l == b.l) return true;
+        return false;
+    }
+
+    function slogNum(a){ //NOT ACCURATE, TESTED ON {2, 3} AND RETURNED 2.84 INSTEAD OF 2.89.
+        let b = Math.log10(Math.log(10));
+        return new ENum (0, a.l + log10(a.v) + b);
+    }
+
+    function toDouble(a){
+        let returned;
+        returned = a.v;
+        for(i = 0; i<a.l; i++){
+            returned = Math.pow(10, returned);
+        }
+        if(!isFinite(returned)) cout << "toDouble overflow (>2^1024). Returned 1" << endl; return 1;
+        return returned;
+    }
+
+    function expfactNum(a,n){
+        let result = new ENum (0, 1);
+        if(n >= 100){
+            result.l = a.v-4;
+            result.v = 183230.6838806810 * Math.pow(n, Math.log10(a.v));
+            if(!isFinite(result.v)){ result.l++; result.v=308.25;}
+            fixNum(result);
+        }else{
+            for(i = 2; i <= n; i++){
+                result = powNum({l:0, v:i}, result);
+            }
+        }
+        return result;
+    }
+
+    function layerAddition(a,n) {return new ENum (Math.floor(a.l += n), a.v);}
+    function layerMulti(a,n) {return new ENum (Math.floor(a.l *= n), a.v);}
+    function layerExpo(a,n) {return new ENum (Math.floor(Math.pow(a.l, n)), a.v);}
+    function ePow(a) {return powNum(e, a);}
+    function sqrtNum(a) {return powNum(a, {l:0, v:0.5});}
+
+    let num = new ENum(2, 3);
+    let testnum = new ENum(1, 1000);
+
+    //Int main is removed. It's replaced with the HTML file, which is part of a website
+    //Link to it: (none yet)
+
+
+    function run() {
+        let op = parseInt(document.getElementById("operation").value);
+
+        let a = new ENum(
+            parseFloat(document.getElementById("layerA").value),
+            parseFloat(document.getElementById("valueA").value)
+        );
+
+        let b = new ENum(
+            parseFloat(document.getElementById("layerB").value),
+            parseFloat(document.getElementById("valueB").value)
+        );
+
+        let n = parseFloat(document.getElementById("dbl").value)
+
+        let result;
+
+        switch(op) {
+            case 1: result = addNum(a, b); break;
+            case 2: result = mulNum(a, b); break;
+            case 3: result = subNum(a, b); break;
+            case 4: result = divNum(a, b); break;
+            case 5: result = powNum(a, b); break;
+            case 6: result = tetrateNum(a, n); break;
+            case 7: result = log10Num(a); break;
+            case 8: result = pow10Num(a); break;
+            case 9: result = factNum(a); break;
+            case 10: result = lnNum(a); break;
+            case 11: result = logBaseNum(a, b); break;
+            case 12: result = isEqual(a,b); break;
+            case 13: result = isHigher(a, b); break;
+            case 14: result = isLower(a, b); break;
+            case 15: result = slogNum(a, b); break;
+            case 16: result = expfactNum(a, n); break;
+            case 17: result = layerAddition(a, n); break;
+            case 18: result = layerMulti(a, n); break;
+            case 19: result = layerExpo(a, n); break;
+            case 20: result = ePow(a); break;
+            case 21: result = sqrtNum(a); break;
+            default: result = a;
+        }
+
+        document.getElementById("output").innerText = returnNum(result);
+    }
+</script>
+
+</body>
+</html>
