@@ -33,7 +33,6 @@ the 400 is the value, so {3, 300} will be eee300.
 14. ISLOWER: Input two variables, and it says the exact opposite of isHigher.
 15. SLOG: The opposite of tetration, but it's sadly slightly inaccurate. Will be fixed later
 16. EXP-FACTORIAL (NEW): This is exponential factorial, which instead of doing n*(n-1)*(n-2)... n times ...*1 it does n^(n-1)^(n-2)... n times ...^1
-(COMING SOON)
 17. LAYER-ADD: Adds any value to the layer. (must be a double)
 18. LAYER-MULTI: Multiplies the layer by a double.
 19. LAYER-EXPO: Powers the layer by a double.
