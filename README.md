@@ -6,6 +6,7 @@ A recreation of break_eternity .js but instead of using javascript it uses C++, 
 # Information
 Break-Eternity-CPP is a project made to compute numbers up to 10^^(2^1024), same as break_eternity.js.
 The actual point here is that i remade it but in C++, so you can use C++ libraries with it.
+When you reach above 10^^(2^1024) the text displayed is 'Omega', because after BreakEternity you GO past eternity and then reach Omega which is broken until 10{1000}10.
 
 # Features
 EternityNum struct, addition, subtraction, multiplication, division, exponentation, tetration, normalization (fixNum),
@@ -29,11 +30,11 @@ the 400 is the value, so {3, 300} will be eee300.
 11. ISEQUAL: Input two variables, and depending on what you put there, it will return 0 or 1 (false or true)
 12. ISHIGHER: Input two variables, and says if a > b is true or false. To recreate ">=", you need to use isHigher && isEqual for now.
 13. ISLOWER: Input two variables, and it says the exact opposite of isHigher.
-14. SLOG (NEW): The opposite of tetration, but it's sadly slightly inaccurate. Will be fixed later
+14. SLOG: The opposite of tetration, but it's sadly slightly inaccurate. Will be fixed later
+15. EXP-FACTORIAL (NEW): This is exponential factorial, which instead of doing n*(n-1)*(n-2)... n times ...*1 it does n^(n-1)^(n-2)... n times ...^1
 
 # Stuff to fix
-1. Factorial inaccuracy: fact(99093F1) will result in 99099F2
-2. Slog inaccuracy: Results may be off, like it was once tested, it said ~2.84 where it had to be ~2.89.
+1. Slog inaccuracy: Results may be off, like it was once tested, it said ~2.84 where it had to be ~2.89.
 
 # Extras
 The code comes with a calculator, ready for you to test. If you can, tell me if there's any issues except for factorial/slog inaccuracy.
